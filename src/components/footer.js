@@ -147,13 +147,13 @@ const Footer = () => {
               © {new Date().getFullYear()} Education Tracker. All rights reserved.
             </p>
             <div className="flex space-x-4">
-              <a href="/privacy" className="text-gray-300 hover:text-white text-sm transition duration-300">
+              <a href="#" className="text-gray-300 hover:text-white text-sm transition duration-300">
                 Privacy Policy
               </a>
-              <a href="/terms" className="text-gray-300 hover:text-white text-sm transition duration-300">
+              <a href="#" className="text-gray-300 hover:text-white text-sm transition duration-300">
                 Terms of Service
               </a>
-              <a href="/cookies" className="text-gray-300 hover:text-white text-sm transition duration-300">
+              <a href="#" className="text-gray-300 hover:text-white text-sm transition duration-300">
                 Cookie Policy
               </a>
             </div>
