@@ -86,7 +86,6 @@ let updateToken = async (e) => {
  
 };
 
-
     useEffect(()=>{
       let forMinutes = 1000 *60 *2
       let interval = setInterval(()=>{
