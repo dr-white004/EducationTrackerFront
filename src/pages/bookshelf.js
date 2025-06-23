@@ -1,13 +1,52 @@
-import React from 'react';
+
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import AuthContext from '../context/Authcontext';
 import Header from '../components/header';
 import Footer from '../components/footer';
+import BACKEND_URL from '../context/bacurl';
 
 const Bookshelf = () => {
+  const [stats, setStats] = useState({
+    past: 0,
+    present: 0,
+    future: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const { auth } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchBookStats = async () => {
+      if (!auth.access) return;
+      setLoading(true);
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.access}`,
+        };
+        const [pastRes, presentRes, futureRes] = await Promise.all([
+          axios.get(`${BACKEND_URL}/track/past-books/`, { headers }),
+          axios.get(`${BACKEND_URL}/track/present-books/`, { headers }),
+          axios.get(`${BACKEND_URL}/track/future-books/`, { headers }),
+        ]);
+        setStats({
+          past: pastRes.data.length,
+          present: presentRes.data.length,
+          future: futureRes.data.length,
+        });
+      } catch (error) {
+        console.error('Error fetching book stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookStats();
+  }, [auth.access]);
+
   return (
     <div className="min-h-screen bg-white">
-        <Header />
-      
+      <Header />
+
       {/* Hero Section */}
       <div className="relative pt-20 pb-16 bg-white">
         <div className="container mx-auto px-4">
@@ -95,6 +134,13 @@ const Bookshelf = () => {
       </div>
 
       {/* Stats Section */}
+      {!auth.access && (
+        <div className="py-8 bg-yellow-50 text-center">
+          <p className="text-lg text-yellow-800">
+            <Link to="/login" className="underline hover:text-yellow-900">Log in</Link> to see your personalized reading stats.
+          </p>
+        </div>
+      )}
       <div className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -107,15 +153,27 @@ const Bookshelf = () => {
             
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center bg-gray-50 rounded-lg p-8 shadow-md">
-                <div className="text-4xl font-bold text-blue-600 mb-2">24</div>
+                {loading ? (
+                  <div className="text-4xl font-bold text-blue-600 mb-2 animate-pulse">...</div>
+                ) : (
+                  <div className="text-4xl font-bold text-blue-600 mb-2">{stats.past}</div>
+                )}
                 <div className="text-gray-600">Books Read</div>
               </div>
               <div className="text-center bg-gray-50 rounded-lg p-8 shadow-md">
-                <div className="text-4xl font-bold text-green-600 mb-2">5</div>
+                {loading ? (
+                  <div className="text-4xl font-bold text-green-600 mb-2 animate-pulse">...</div>
+                ) : (
+                  <div className="text-4xl font-bold text-green-600 mb-2">{stats.present}</div>
+                )}
                 <div className="text-gray-600">Currently Reading</div>
               </div>
               <div className="text-center bg-gray-50 rounded-lg p-8 shadow-md">
-                <div className="text-4xl font-bold text-purple-600 mb-2">12</div>
+                {loading ? (
+                  <div className="text-4xl font-bold text-purple-600 mb-2 animate-pulse">...</div>
+                ) : (
+                  <div className="text-4xl font-bold text-purple-600 mb-2">{stats.future}</div>
+                )}
                 <div className="text-gray-600">On Your List</div>
               </div>
             </div>
